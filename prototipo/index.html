@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Prototipo de revisión de reservas hoteleras para Revenue Management.">
+  <title>Riesgo de cancelación · Revenue Management</title>
+  <link rel="stylesheet" href="./estilos.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header class="top">
+    <div class="shell top-inner">
+      <a class="brand" href="#inicio"><span class="brand-icon" aria-hidden="true">▥</span> Revenue Management</a>
+      <nav aria-label="Navegación principal">
+        <a href="#inicio" data-route="inicio">Inicio</a>
+        <a href="#evaluacion" data-route="evaluacion">Evaluación</a>
+        <a href="#historico" data-route="historico">Histórico</a>
+      </nav>
+    </div>
+  </header>
+  <main class="shell main" id="contenido" tabindex="-1">
+    <noscript><p class="notice">Activa JavaScript para navegar y consultar el histórico.</p></noscript>
+    <div class="notice" id="load-notice">
+      <span id="load-status" role="status">Cargando reservas y catálogos…</span>
+      <button id="retry" class="secondary" type="button" hidden>Reintentar</button>
+    </div>
+    <section id="inicio" aria-labelledby="home-title">
+      <div class="hero">
+        <div>
+          <p class="eyebrow">REVENUE MANAGEMENT · ANÁLISIS DE RESERVAS</p>
+          <h1 id="home-title" tabindex="-1">Riesgo de<br>cancelación</h1>
+          <p>Consulta reservas históricas y revisa cuáles quedaron dentro del cupo de seguimiento antes de la llegada.</p>
+          <div class="actions"><a class="primary" href="#historico">Explorar histórico <span aria-hidden="true">→</span></a><a class="secondary light" href="#evaluacion">Abrir formulario</a></div>
+        </div>
+        <aside class="summary" aria-labelledby="summary-title">
+          <h2 id="summary-title">Datos de la Entrega 03</h2>
+          <strong id="total">—</strong><p>reservas puntuadas</p>
+          <hr>
+          <dl><div><dt id="test-total">—</dt><dd>Prueba</dd></div><div><dt id="validation-total">—</dt><dd>Validación</dd></div></dl>
+        </aside>
+      </div>
+      <div class="home-grid">
+        <article class="card"><h2>Evaluación de reservas</h2><p>Comprueba los datos de estancia, ocupación y condiciones comerciales que utiliza el modelo.</p><a href="#evaluacion">Ir al formulario →</a></article>
+        <article class="card"><h2>Seguimiento preventivo</h2><p>Abre una ficha histórica para ver su estimación, prioridad y las acciones que puede valorar el equipo.</p><a href="#historico">Consultar reservas →</a></article>
+      </div>
+    </section>
+    <section id="evaluacion" aria-labelledby="eval-title" hidden>
+      <div class="page-heading"><h1 id="eval-title" tabindex="-1">Evaluación de reservas</h1><p>Comprueba los datos de entrada o carga una ficha con resultado histórico.</p></div>
+      <div class="eval-grid">
+        <article class="card">
+          <div class="card-heading"><h2>Datos de la reserva</h2><a class="secondary" href="#historico">Cargar del histórico</a></div>
+          <form id="booking" novalidate>
+            <fieldset id="booking-fields" disabled>
+              <legend class="sr-only">Predictores del modelo</legend>
+              <fieldset><legend>Estancia</legend><div id="stay" class="fields"></div></fieldset>
+              <fieldset><legend>Ocupación</legend><div id="guests" class="fields"></div>
+                <label class="checkbox"><input type="checkbox" name="children_missing"> Número de niños desconocido</label>
+              </fieldset>
+              <fieldset><legend>Condiciones comerciales</legend><div id="commercial" class="fields"></div></fieldset>
+              <div class="actions"><button class="primary" type="submit">Validar datos</button><button id="clear" class="secondary" type="button">Limpiar formulario</button></div>
+            </fieldset>
+            <p id="validation-status" role="status"></p>
+          </form>
+        </article>
+        <aside class="card result" aria-labelledby="result-title">
+          <div class="card-heading"><h2 id="result-title">Resultado</h2><span class="pill neutral" id="result-source">Sin resultado</span></div>
+          <div id="no-result">
+            <p id="result-message">Selecciona una reserva del histórico para ver la estimación guardada.</p>
+            <button type="button" disabled aria-describedby="model-state">Calcular predicción</button>
+            <p id="model-state" class="muted">Modelo sin conectar. La evaluación de reservas nuevas está desactivada.</p>
+          </div>
+          <div id="result-data" hidden>
+            <p class="muted">Probabilidad de cancelación estimada</p>
+            <strong class="score" id="score"></strong>
+            <meter id="score-bar" min="0" max="1" aria-label="Estimación de cancelación"></meter>
+            <div class="scale"><span>0 %</span><span>100 %</span></div>
+            <p class="calibration">Estimación sin calibrar. Interprétala como una puntuación de riesgo.</p>
+            <div id="priority-box" class="priority"><strong id="priority"></strong><p id="rank"></p><p id="batch"></p></div>
+            <div class="recommendations"><h3>Acciones preventivas</h3><p class="muted">Orientaciones de seguimiento para Revenue Management.</p><ul id="recommendations"></ul></div>
+          </div>
+          <p id="result-live" class="sr-only" role="status"></p>
+        </aside>
+      </div>
+    </section>
+    <section id="historico" aria-labelledby="history-title" hidden>
+      <div class="page-heading"><h1 id="history-title" tabindex="-1">Reservas históricas</h1><p>Predicciones guardadas de la regresión logística de la Entrega 03.</p></div>
+      <article class="card">
+        <fieldset id="history-filters" class="filters" disabled>
+          <legend class="sr-only">Buscar y filtrar reservas</legend>
+          <label>Buscar por ID <input id="search" type="search" inputmode="numeric" placeholder="Ej. 116617"></label>
+          <label>Hotel <select id="hotel-filter"><option value="">Todos</option></select></label>
+          <label>Partición <select id="partition"><option value="">Todas</option><option value="prueba">Prueba</option><option value="validacion">Validación</option></select></label>
+          <label>Mes de alta estimada <select id="month"><option value="">Todos</option></select></label>
+          <label>Prioridad <select id="priority-filter"><option value="">Todas</option><option value="high">Prioridad alta</option><option value="outside">Fuera del cupo</option></select></label>
+        </fieldset>
+        <p id="history-status" role="status"></p>
+        <div class="table-wrap" tabindex="0" role="region" aria-label="Tabla de resultados históricos">
+          <table><caption class="sr-only">Resultados ordenados de mayor a menor estimación</caption><thead><tr><th scope="col">Reserva</th><th scope="col">Hotel</th><th scope="col">Llegada</th><th scope="col">Partición</th><th scope="col">Estimación</th><th scope="col">Prioridad</th><th scope="col">Ficha</th></tr></thead><tbody id="history-rows"></tbody></table>
+        </div>
+        <div id="pager" class="pagination" hidden><button type="button" id="previous" class="secondary">Anterior</button><span id="page-info"></span><button type="button" id="next" class="secondary">Siguiente</button></div>
+      </article>
+    </section>
+  </main>
+  <footer class="shell footer"><span>TFM · Evolve Academy</span><span>Datos históricos · Entrega 03</span></footer>
+</body>
+</html>
